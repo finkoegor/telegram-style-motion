@@ -8,9 +8,20 @@ The clip is one unbroken take. The app presses its own buttons on a timer, the
 Simulator records the screen, a script puts the recording into a phone bezel, adds the
 background, the camera moves and the rings, and encodes 60 fps H.264.
 
-This repository is a skill for Claude Code: drop it into `~/.claude/skills/` or a
-project's `.claude/skills/` and ask for "a promo clip of the add flow". It also works by
-hand: the scripts are plain zsh, Python and Swift.
+This repository is a skill for Claude Code. It also works by hand: the scripts are
+plain zsh, Python and Swift.
+
+## Install
+
+```
+git clone https://github.com/finkoegor/telegram-style-motion ~/.claude/skills/telegram-style-motion
+```
+
+Or for one project only, into its `.claude/skills/telegram-style-motion`. Start a new
+Claude Code session in the app's folder and ask in your own words, for example "make a
+promo clip: add an item from a link, show the result, dark theme, brand gradient", or
+call it directly with `/telegram-style-motion`. Claude can also install it for you if
+you paste the repository link and ask it to.
 
 ## What you need
 
@@ -139,6 +150,13 @@ is better: external taps drift, and the first taps after a boot land late.
   `ffmpeg -i promo.mp4 -vf "fps=2,scale=240:-1,tile=6x4" -frames:v 1 sheet.png`
 
 ## По-русски
+
+Установка: `git clone https://github.com/finkoegor/telegram-style-motion ~/.claude/skills/telegram-style-motion`,
+потом новая сессия Claude Code в папке приложения и просьба своими словами («сделай
+промо-ролик: добавление вещи по ссылке, тёмная тема, наш градиент») или команда
+`/telegram-style-motion`. Можно просто скинуть Claude ссылку на репозиторий и попросить
+установить.
+
 
 Скилл для Claude Code и три скрипта, чтобы снимать промо-ролики iOS-приложения в
 стиле Telegram: телефон на градиенте, приложение внутри, камера наезжает на действие,
