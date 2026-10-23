@@ -107,9 +107,11 @@ def sync_offset(taps, onsets, anchor=None):
     if not len(onsets) or not taps:
         return anchor or 0.0
     times = np.array([tap["time"] for tap in taps])
+    # The run may begin before the recording, when the app is launched first and waits
+    # for something from outside: the offset is then below zero.
     low, high = (anchor - 0.25, anchor + 0.25) if anchor is not None else (0, onsets.max())
-    best, best_cost = max(low, 0.0), math.inf
-    for offset in np.arange(max(low, 0.0), high, 1 / 240):
+    best, best_cost = low, math.inf
+    for offset in np.arange(low, high, 1 / 240):
         # The presses sit as close before their changes as they can without passing one.
         cost = 0.0
         for t in times + offset:

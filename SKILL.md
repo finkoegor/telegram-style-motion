@@ -82,7 +82,8 @@ wrapped in `#if DEBUG`, nothing ships), then:
   is always there with a locator and the same action the tap does:
   `.demoTarget(.analyze, locate: { DemoLocator.frameOfTab(at: 1) }) { selectedTab = .analyze }`.
   Tab buttons carry no accessibility labels on iOS 27 and are drawn twice (plain and
-  selected), so `DemoLocator` finds them by position.
+  selected), so `DemoLocator` finds them by position. A back button or a bar button:
+  `DemoLocator.frameOfLeadingBarButton()`, the leftmost one a tap would reach.
 - Seed the data the clip shows: every day of the weeks or months the viewer will see,
   with varied values, so charts and lists are never empty or flat.
 - Start it from the root view: `.task { await DemoAutopilot.shared?.run() }`. If the app
@@ -121,6 +122,14 @@ STATE_DIR=~/takes/state/MyApp APPEARANCE=dark TIME=9:41 CLIPBOARD="https://examp
 - A paste button needs the text on the simulator's clipboard (`CLIPBOARD`). After a paste
   iOS may show a "pasted from" banner; cover it in the edit or paste through the model.
 - Do a dry run without recording: check that the flow completes and the timeline shows up.
+- Something from outside the app (a message with a link, a push): a Messages banner
+  drops over the app with `xcrun simctl push <udid> com.apple.MobileSMS message.json`
+  (`{"Simulator Target Bundle": "com.apple.MobileSMS", "aps": {"alert": {"title": "Name",
+  "body": "text"}}}`), and `xcrun simctl openurl <udid> <link>` opens the link where a
+  tap on the banner would; the banner leaves as the link opens. Launch the app with the
+  autopilot first, let `press` wait for what the link opens, and add the banner tap to
+  `taps.json` by hand, timed from the timeline's `started`, a quarter second before the
+  link opens.
 
 ## Step 3: the clip
 
