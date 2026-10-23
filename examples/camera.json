@@ -1,0 +1,6 @@
+[
+  { "at": "tap2-0.45", "duration": 1.0, "zoom": 1.55, "focus": [201, 380] },
+  { "at": "tap3-0.95", "duration": 0.8, "zoom": 1.0 },
+  { "at": "tap4+0.4", "duration": 1.0, "zoom": 1.3, "focus": [201, 360] },
+  { "at": "tap4+1.4", "duration": 0.8, "zoom": 1.0 }
+]
