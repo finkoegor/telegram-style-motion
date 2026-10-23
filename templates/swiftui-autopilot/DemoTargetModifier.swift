@@ -8,6 +8,8 @@ struct DemoTargetModifier: ViewModifier {
     let target: DemoTarget
     let isEnabled: Bool
     let anchor: UnitPoint
+    /// For a control the system draws, whose frame SwiftUI doesn't know.
+    var locate: (() -> CGRect?)? = nil
     let action: () -> Void
 
     @State private var frame: CGRect?
@@ -16,8 +18,12 @@ struct DemoTargetModifier: ViewModifier {
         if let demo = DemoAutopilot.shared {
             content
                 .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { frame in
+                    guard locate == nil else { return }
                     self.frame = frame
                     demo.place(target, at: frame, anchor: anchor)
+                }
+                .onAppear {
+                    if let locate { demo.locate(target, anchor: anchor, with: locate) }
                 }
                 .onChange(of: isEnabled, initial: true) { _, isEnabled in
                     demo.setEnabled(target, isEnabled)

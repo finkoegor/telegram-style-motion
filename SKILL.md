@@ -78,6 +78,13 @@ wrapped in `#if DEBUG`, nothing ships), then:
   `.demoTarget(tag == "Outside" ? .location : nil) { toggle(tag) }`.
 - A button whose meaning changes in place (Continue, then Save) passes the target for
   the current step: `.demoTarget(step == 1 ? .next : .complete, action: footerAction)`.
+- Controls the system draws (tab bar items) have no SwiftUI frame. Mark any view that
+  is always there with a locator and the same action the tap does:
+  `.demoTarget(.analyze, locate: { DemoLocator.frameOfTab(at: 1) }) { selectedTab = .analyze }`.
+  Tab buttons carry no accessibility labels on iOS 27 and are drawn twice (plain and
+  selected), so `DemoLocator` finds them by position.
+- Seed the data the clip shows: every day of the weeks or months the viewer will see,
+  with varied values, so charts and lists are never empty or flat.
 - Start it from the root view: `.task { await DemoAutopilot.shared?.run() }`. If the app
   has a launch screen or loader, the first pause has to outlast it, or the clip opens on
   the loader.

@@ -16,5 +16,11 @@ extension View {
             self
         }
     }
+
+    /// For a control the system draws, such as a tab bar item: `locate` finds its frame in
+    /// screen points when the press comes, `action` does what a tap on it does.
+    func demoTarget(_ target: DemoTarget, locate: @escaping () -> CGRect?, anchor: UnitPoint = .center, action: @escaping () -> Void) -> some View {
+        modifier(DemoTargetModifier(target: target, isEnabled: true, anchor: anchor, locate: locate, action: action))
+    }
 }
 #endif

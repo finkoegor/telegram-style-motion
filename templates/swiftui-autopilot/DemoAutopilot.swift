@@ -25,6 +25,7 @@ final class DemoAutopilot {
 
     /// Where each control's press lands, in screen points.
     @ObservationIgnored private var points: [DemoTarget: CGPoint] = [:]
+    @ObservationIgnored private var locators: [DemoTarget: (anchor: UnitPoint, frame: () -> CGRect?)] = [:]
     @ObservationIgnored private var enabled: Set<DemoTarget> = []
     @ObservationIgnored private var taps: [DemoTap] = []
     @ObservationIgnored private var start: CFTimeInterval = 0
@@ -54,6 +55,11 @@ final class DemoAutopilot {
         if isEnabled { enabled.insert(target) } else { enabled.remove(target) }
     }
 
+    func locate(_ target: DemoTarget, anchor: UnitPoint, with frame: @escaping () -> CGRect?) {
+        locators[target] = (anchor, frame)
+        enabled.insert(target)
+    }
+
     func remove(_ target: DemoTarget) {
         points[target] = nil
         enabled.remove(target)
@@ -65,6 +71,10 @@ final class DemoAutopilot {
 
     private func press(_ target: DemoTarget, after delay: TimeInterval = 0) async {
         while points[target] == nil || !enabled.contains(target) {
+            if let locator = locators[target], let frame = locator.frame() {
+                place(target, at: frame, anchor: locator.anchor)
+                continue
+            }
             await pause(0.05)
         }
         await pause(delay)
