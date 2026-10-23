@@ -2,6 +2,7 @@
 import Foundation
 import Observation
 import QuartzCore
+import SwiftUI
 
 /// Plays a scripted run through the app for promo recordings. A debug build launched
 /// with `-Demo` presses controls on a timer through their own actions, so the pacing
@@ -22,7 +23,8 @@ final class DemoAutopilot {
     /// The control to press now; its view runs the action and reports back.
     private(set) var pressing: DemoTarget?
 
-    @ObservationIgnored private var frames: [DemoTarget: CGRect] = [:]
+    /// Where each control's press lands, in screen points.
+    @ObservationIgnored private var points: [DemoTarget: CGPoint] = [:]
     @ObservationIgnored private var enabled: Set<DemoTarget> = []
     @ObservationIgnored private var taps: [DemoTap] = []
     @ObservationIgnored private var start: CFTimeInterval = 0
@@ -44,8 +46,8 @@ final class DemoAutopilot {
         writeTimeline()
     }
 
-    func place(_ target: DemoTarget, at frame: CGRect) {
-        frames[target] = frame
+    func place(_ target: DemoTarget, at frame: CGRect, anchor: UnitPoint = .center) {
+        points[target] = CGPoint(x: frame.minX + frame.width * anchor.x, y: frame.minY + frame.height * anchor.y)
     }
 
     func setEnabled(_ target: DemoTarget, _ isEnabled: Bool) {
@@ -53,7 +55,7 @@ final class DemoAutopilot {
     }
 
     func remove(_ target: DemoTarget) {
-        frames[target] = nil
+        points[target] = nil
         enabled.remove(target)
     }
 
@@ -62,12 +64,12 @@ final class DemoAutopilot {
     }
 
     private func press(_ target: DemoTarget, after delay: TimeInterval = 0) async {
-        while frames[target] == nil || !enabled.contains(target) {
+        while points[target] == nil || !enabled.contains(target) {
             await pause(0.05)
         }
         await pause(delay)
-        guard let frame = frames[target] else { return }
-        taps.append(DemoTap(target: target, time: CACurrentMediaTime() - start, x: frame.midX, y: frame.midY))
+        guard let point = points[target] else { return }
+        taps.append(DemoTap(target: target, time: CACurrentMediaTime() - start, x: point.x, y: point.y))
         pressing = target
     }
 

@@ -71,7 +71,16 @@ wrapped in `#if DEBUG`, nothing ships), then:
   the page and saves reads as: `press(.add)`, `pause(1.2)`, `press(.paste)`,
   `press(.save, after: 2.0)` with `.save` enabled only once the page is loaded,
   `pause(2.4)`, `press(.done)`, `pause(2.0)`.
-- Start it from the root view: `.task { await DemoAutopilot.shared?.run() }`.
+- A slider is pressed where its value would be: `anchor: UnitPoint(x: 0.96, y: 0.5)` puts
+  the ring at the top end, and the action can walk the value up step by step so the
+  number counts as under a finger.
+- One item of a list (a tag, a row) is picked with an optional target:
+  `.demoTarget(tag == "Outside" ? .location : nil) { toggle(tag) }`.
+- A button whose meaning changes in place (Continue, then Save) passes the target for
+  the current step: `.demoTarget(step == 1 ? .next : .complete, action: footerAction)`.
+- Start it from the root view: `.task { await DemoAutopilot.shared?.run() }`. If the app
+  has a launch screen or loader, the first pause has to outlast it, or the clip opens on
+  the loader.
 - Values the flow needs (a link to paste, a name to type) come through launch arguments
   such as `-DemoLink https://...` and `DemoAutopilot.argument("Link")`.
 
@@ -90,7 +99,7 @@ recording, and pass `--offset 0` to `compose.py`.
 ## Step 2: the take
 
 ```
-STATE_DIR=~/takes/state/MyApp DARK=1 TIME=9:41 CLIPBOARD="https://example.com/product" \
+STATE_DIR=~/takes/state/MyApp APPEARANCE=dark TIME=9:41 CLIPBOARD="https://example.com/product" \
   scripts/record.sh ~/takes/take1 <simulator udid> com.example.app -Demo -DemoLink https://example.com/product
 ```
 

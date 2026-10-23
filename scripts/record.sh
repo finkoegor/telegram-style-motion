@@ -8,7 +8,7 @@
 # (the autopilot's timeline) or after $MAX_SECONDS (default 60).
 #
 # Environment:
-#   DARK=1            dark appearance
+#   APPEARANCE=light  light or dark appearance
 #   TIME=9:41         status bar time; the bar is set to full signal and battery
 #   CLIPBOARD=text    put text on the simulator's clipboard before launch
 #   STATE_DIR=path    replace the app's Application Support folder with this one, for a
@@ -32,7 +32,7 @@ if [[ -n "$STATE_DIR" ]]; then
   cp -R "$STATE_DIR" "$DATA/Library/Application Support/$(basename "$STATE_DIR")"
 fi
 
-[[ "$DARK" == 1 ]] && xcrun simctl ui $SIM appearance dark
+[[ -n "$APPEARANCE" ]] && xcrun simctl ui $SIM appearance $APPEARANCE
 if [[ -n "$TIME" ]]; then
   xcrun simctl status_bar $SIM override --time $TIME --batteryState charged --batteryLevel 100 \
     --cellularMode active --cellularBars 4 --wifiMode active --wifiBars 3 --dataNetwork wifi

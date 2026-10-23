@@ -29,7 +29,7 @@ hand: the scripts are plain zsh, Python and Swift.
 2. Record a take:
 
    ```
-   DARK=1 TIME=9:41 scripts/record.sh ~/takes/take1 <simulator udid> com.example.app -Demo
+   APPEARANCE=dark TIME=9:41 scripts/record.sh ~/takes/take1 <simulator udid> com.example.app -Demo
    ```
 
 3. Build the clip:
