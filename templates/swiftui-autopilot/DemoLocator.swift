@@ -46,6 +46,61 @@ enum DemoLocator {
         return nil
     }
 
+    /// Opens the menu of the rightmost bar button, a SwiftUI `Menu` in the toolbar, as a
+    /// tap would. A menu has no action to call, so this goes through the button's menu
+    /// interaction and a private UIKit method; debug builds only.
+    static func presentMenuOfTrailingBarButton() {
+        let windows = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .filter { !$0.isHidden }
+        let buttons = windows
+            .flatMap(descendants(of:))
+            .compactMap { $0 as? UINavigationBar }
+            .flatMap(descendants(of:))
+            .filter { $0 is UIControl && $0.window != nil && !$0.isHidden && $0.bounds.width > 20 }
+            .sorted { $0.convert($0.bounds, to: nil).maxX < $1.convert($1.bounds, to: nil).maxX }
+        guard let button = buttons.last,
+              let interaction = ([button] + descendants(of: button))
+                .lazy
+                .compactMap({ $0.interactions.first { $0 is UIContextMenuInteraction } as? UIContextMenuInteraction })
+                .first,
+              let view = interaction.view
+        else { return }
+        let present = NSSelectorFromString("_presentMenuAtLocation:")
+        guard interaction.responds(to: present) else { return }
+        typealias Present = @convention(c) (AnyObject, Selector, CGPoint) -> Void
+        let call = unsafeBitCast(interaction.method(for: present), to: Present.self)
+        call(interaction, present, CGPoint(x: view.bounds.midX, y: view.bounds.midY))
+        openMenu = interaction
+    }
+
+    /// Where a row of the open menu is, found by its title.
+    static func frameOfMenuItem(titled title: String) -> CGRect? {
+        let windows = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+        let label = windows
+            .flatMap(descendants(of:))
+            .compactMap { $0 as? UILabel }
+            .first { $0.text == title && $0.window != nil && !$0.isHidden && $0.alpha > 0.01 }
+        guard let label else { return nil }
+        var row: UIView = label
+        while let parent = row.superview, parent.bounds.height < 64 {
+            row = parent
+        }
+        return row.convert(row.bounds, to: nil)
+    }
+
+    /// Closes the menu opened above, as picking one of its rows does; the row's action
+    /// is the target's own.
+    static func dismissMenu() {
+        openMenu?.dismissMenu()
+        openMenu = nil
+    }
+
+    private static weak var openMenu: UIContextMenuInteraction?
+
     private static func first<View: UIView>(_ type: View.Type, in view: UIView) -> View? {
         if let match = view as? View { return match }
         for subview in view.subviews {

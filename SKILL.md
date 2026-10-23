@@ -84,6 +84,10 @@ wrapped in `#if DEBUG`, nothing ships), then:
   Tab buttons carry no accessibility labels on iOS 27 and are drawn twice (plain and
   selected), so `DemoLocator` finds them by position. A back button or a bar button:
   `DemoLocator.frameOfLeadingBarButton()`, the leftmost one a tap would reach.
+- A SwiftUI `Menu` has no action to call. `DemoLocator.presentMenuOfTrailingBarButton()`
+  opens a toolbar menu with its real animation; a row is found with
+  `frameOfMenuItem(titled:)` and pressed by `dismissMenu()` plus the row's own action:
+  `.demoTarget(.listView, locate: { DemoLocator.frameOfMenuItem(titled: "List view") }) { DemoLocator.dismissMenu(); layout = .list }`.
 - Seed the data the clip shows: every day of the weeks or months the viewer will see,
   with varied values, so charts and lists are never empty or flat.
 - Start it from the root view: `.task { await DemoAutopilot.shared?.run() }`. If the app
