@@ -149,7 +149,7 @@ is better: external taps drift, and the first taps after a boot land late.
 - Check the clip frame by frame before posting:
   `ffmpeg -i promo.mp4 -vf "fps=2,scale=240:-1,tile=6x4" -frames:v 1 sheet.png`
 
-## По-русски
+## Russian
 
 Установка: `git clone https://github.com/finkoegor/telegram-style-motion ~/.claude/skills/telegram-style-motion`,
 потом новая сессия Claude Code в папке приложения и просьба своими словами («сделай
